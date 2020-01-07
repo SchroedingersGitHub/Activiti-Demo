@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.max.mapper.EmployeeMapper">
+    <resultMap id="BaseResultMap" type="com.max.domain.Employee">
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <result column="name" property="name" jdbcType="VARCHAR"/>
+        <result column="password" property="password" jdbcType="VARCHAR"/>
+        <result column="email" property="email" jdbcType="VARCHAR"/>
+        <result column="role" property="role" jdbcType="VARCHAR"/>
+        <association property="manager" javaType="Employee" select="com.max.mapper.EmployeeMapper.selectByPrimaryKey"
+                     column="manager_id"/>
+    </resultMap>
+    <resultMap id="BaseResultMap2" type="com.max.domain.Employee">
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <result column="name" property="name" jdbcType="VARCHAR"/>
+        <result column="password" property="password" jdbcType="VARCHAR"/>
+        <result column="email" property="email" jdbcType="VARCHAR"/>
+        <result column="role" property="role" jdbcType="VARCHAR"/>
+    </resultMap>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from A_EMPLOYEE
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+    <insert id="insert" parameterType="com.max.domain.Employee">
+    insert into A_EMPLOYEE (id, name, password, 
+      email, role, manager_id
+      )
+    values (#{id,jdbcType=BIGINT}, #{name,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR}, 
+      #{email,jdbcType=VARCHAR}, #{role,jdbcType=VARCHAR}, #{managerId,jdbcType=BIGINT}
+      )
+  </insert>
+    <update id="updateByPrimaryKey" parameterType="com.max.domain.Employee">
+    update A_EMPLOYEE
+    set name = #{name,jdbcType=VARCHAR},
+      password = #{password,jdbcType=VARCHAR},
+      email = #{email,jdbcType=VARCHAR},
+      role = #{role,jdbcType=VARCHAR},
+      manager_id = #{managerId,jdbcType=BIGINT}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap2" parameterType="java.lang.Long">
+    select id, name, password, email, role
+    from A_EMPLOYEE
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+    <select id="selectAll" resultMap="BaseResultMap">
+    select id, name, password, email, role, manager_id
+    from A_EMPLOYEE
+  </select>
+    <select id="selectOneByName" resultMap="BaseResultMap">
+      select id, name, password, email, role, manager_id
+      from A_EMPLOYEE
+      where name = #{name}
+    </select>
+</mapper>

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.max.mapper.LeaveBillMapper" >
+  <resultMap id="BaseResultMap" type="com.max.domain.LeaveBill" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="days" property="days" jdbcType="INTEGER" />
+    <result column="content" property="content" jdbcType="VARCHAR" />
+    <result column="remark" property="remark" jdbcType="VARCHAR" />
+    <result column="leaveDate" property="leavedate" jdbcType="TIMESTAMP" />
+    <result column="state" property="state" jdbcType="INTEGER" />
+    <association property="employee" javaType="Employee"  select="com.max.mapper.EmployeeMapper.selectByPrimaryKey" column="user_id"/>
+
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from A_LEAVEBILL
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.max.domain.LeaveBill" >
+    insert into A_LEAVEBILL (id, days, content, 
+      remark, leaveDate, state,user_id
+      )
+    values (#{id,jdbcType=BIGINT}, #{days,jdbcType=INTEGER}, #{content,jdbcType=VARCHAR}, 
+      #{remark,jdbcType=VARCHAR}, #{leavedate,jdbcType=TIMESTAMP}, #{state,jdbcType=INTEGER},
+      #{employee.id}
+      )
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.max.domain.LeaveBill" >
+    update A_LEAVEBILL
+    set days = #{days,jdbcType=INTEGER},
+      content = #{content,jdbcType=VARCHAR},
+      remark = #{remark,jdbcType=VARCHAR},
+      leaveDate = #{leavedate,jdbcType=TIMESTAMP},
+      state = #{state,jdbcType=INTEGER}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select id, days, content, remark, leaveDate, state
+    from A_LEAVEBILL
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap" >
+    select id, days, content, remark, leaveDate, state
+    from A_LEAVEBILL
+  </select>
+    <select id="selectAllByUserID" resultMap="BaseResultMap">
+      select id, days, content, remark, leaveDate, state, user_id
+      from A_LEAVEBILL where user_id = #{id}
+    </select>
+</mapper>

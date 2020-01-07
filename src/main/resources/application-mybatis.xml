@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context.xsd
+    http://www.springframework.org/schema/aop
+    http://www.springframework.org/schema/aop/spring-aop.xsd
+     http://www.springframework.org/schema/tx
+        http://www.springframework.org/schema/tx/spring-tx.xsd
+">
+
+    <!--spring-Mybatis整合-->
+    <!--加载数据库属性文件-->
+    <context:property-placeholder location="classpath:db.properties"/>
+    <!--连接池-->
+    <bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource">
+        <property name="driverClassName" value="${jdbc.driver}" />
+        <!--属性文件当中的名称不能和name名称一样-->
+        <property name="url" value="${jdbc.url}" />
+        <property name="username" value="${jdbc.username}" />
+        <property name="password" value="${jdbc.password}" />
+    </bean>
+    <!-- 配置事务管理器 -->
+    <bean id="transactionManager"
+          class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <!-- 数据源 -->
+        <property name="dataSource" ref="dataSource" />
+    </bean>
+    <!-- 开启注解事务 -->
+    <tx:annotation-driven transaction-manager="transactionManager"/>
+
+    <!-- Mybatis的工厂 -->
+    <bean id="sqlSessionFactoryBean" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="dataSource" ref="dataSource"/>
+        <!-- 核心配置文件的位置 -->
+        <property name="configLocation" value="classpath:sqlMapConfig.xml"/>
+        <!--配置mapper映射文件的路径-->
+        <property name="mapperLocations" value="classpath:com/max/mapper/*Mapper.xml"/>
+    </bean>
+
+    <!-- 配置Mapper接口扫描 -->
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <!-- 配置Mapper扫描包 -->
+        <property name="basePackage" value="com.max.mapper" />
+    </bean>
+
+    <!--Activity流程引擎配置项-->
+    <bean  id="processEngineConfiguration" class="org.activiti.spring.SpringProcessEngineConfiguration">
+        <!--数据源 和系统同一个-->
+        <property name="dataSource" ref="dataSource"/>
+        <!--操作数据库   事务管理-->
+        <property name="transactionManager" ref="transactionManager" />
+        <!--更新数据库表 如果没有 则创建-->
+        <property name="databaseSchemaUpdate" value="true" />
+        <!-- 是否启动jobExecutor -->
+        <property name="jobExecutorActivate" value="false" />
+        <!--字体约束-->
+        <property name="activityFontName" value="宋体"/>
+        <property name="labelFontName" value="宋体"/>
+        <!--自动部署流程-->
+        <property name="deploymentResources">
+            <list>
+                <!--<value>classpath*:workflow/*.bpmn</value>-->
+            </list>
+        </property>
+    </bean>
+    <!--流程引擎-->
+    <bean id="processEngine" class="org.activiti.spring.ProcessEngineFactoryBean">
+        <property name="processEngineConfiguration" ref="processEngineConfiguration" />
+    </bean>
+    <!-- 工作流数据存储服务   -->
+    <bean id="repositoryService" factory-bean="processEngine" factory-method="getRepositoryService" />
+    <!-- 工作流运行时服务 -->
+    <bean id="runtimeService" factory-bean="processEngine" factory-method="getRuntimeService" />
+    <!--  工作流任务服务-->
+    <bean id="taskService" factory-bean="processEngine" factory-method="getTaskService" />
+    <!--  工作流历史数据服务-->
+    <bean id="historyService" factory-bean="processEngine" factory-method="getHistoryService" />
+    <!--  工作流管理服务-->
+    <bean id="managementService" factory-bean="processEngine" factory-method="getManagementService" />
+    <!--  任务表单服务-->
+    <bean id="formService" factory-bean="processEngine" factory-method="getFormService" />
+    <!-- 工作流身份识别服务 -->
+    <bean id="IdentityService" factory-bean="processEngine" factory-method="getIdentityService" />
+
+</beans>
